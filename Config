@@ -1,0 +1,108 @@
+@ COREBABA
+
+config t
+   hostname COREbaba_
+   enable secret pass
+   service password-encryption
+   no logging console
+   no ip domain-lookup
+   line console 0
+     password pass
+     login
+     exec-timeout 0 0
+    line vty 0 14
+      password pass
+      login
+      exec-timeout 0 0
+   Int Gi 0/1
+     no shutdown
+	  no switchport
+	  ip add 10._._.4 255.255.255.0
+   Int Vlan 1
+     no shutdown
+	 ip add 10._.1.4 255.255.255.0
+	 description MGMTDATA
+   Int Vlan 10
+     no shutdown
+	 ip add 10._.10.4 255.255.255.0
+	 description WIRELESS
+   Int Vlan 50
+     no shutdown
+	 ip add 10._.50.4 255.255.255.0
+	 description IPCCTV
+   Int Vlan 100
+     no shutdown
+	 ip add 10._.100.4 255.255.255.0
+	 description VOICEVLAN
+end
+conf t 
+ip routing
+ip route 0.0.0.0 0.0.0.0 10._._.1
+end
+wr
+
+@ CUCM *****************************************
+
+config t
+   hostname CUCM-_
+   enable secret pass
+   service password-encryption
+   no logging console
+   no ip domain-lookup
+   line console 0
+     password pass
+     login
+     exec-timeout 0 0
+    line vty 0 14
+      password pass
+      login
+      exec-timeout 0 0
+   Int Fa 0/0
+     no shutdown
+	 ip add 10._.100.8 255.255.255.0 
+	 end
+conf t
+ip routing
+ip route 0.0.0.0 0.0.0.0 10._.100.4
+end
+wr
+
+@ EDGE ******************************************
+
+config t
+   hostname EDGE12
+   enable secret pass
+   service password-encryption
+   no logging console
+   no ip domain-lookup
+   line console 0
+     password pass
+     login
+     exec-timeout 0 0
+    line vty 0 14
+      password pass
+      login
+      exec-timeout 0 0
+   Int Gi 0/0/0
+     description INSIDE
+     ip add 10.12.12.1 255.255.255.0
+	 no shutdown
+   Int Gi 0/0/1
+     description OUTSIDE
+	 ip add 200.0.0.12 255.255.255.0
+	 no shutdown
+   Int Loopback 0
+     description VIRTUALIP
+	 ip add 12.0.0.1 255.255.255.255
+ end
+wr
+
+***************************************************
+
+@ CMD
+
+cmd
+route  add   10.0.0.0   mask   255.0.0.0    10.m.1.4
+route  add  200.0.0.0   mask  255.255.255.0   10.m.1.4
+
+
