@@ -34,6 +34,67 @@ config t
      no shutdown
 	 ip add 10._.100.4 255.255.255.0
 	 description VOICEVLAN
+
+!DHCP: DYNAMIC HOST CONFIGURATION PROTOCOL
+!@@@LEAF SWITCH
+config t
+ip dhcp Excluded-add 10._.1.1 10._.1.100
+ip dhcp Excluded-add 10._.10.1 10._.10.100
+ip dhcp Excluded-add 10._.50.1 10._.50.100
+ip dhcp Excluded-add 10._.100.1 10._.100.100
+ip dhcp pool MGMTDATA
+   network 10._.1.0 255.255.255.0
+   default-router 10._.1.4
+   domain-name MGMTDATA.COM
+   dns-server 10._.1.10
+ip dhcp pool WIFIDATA
+   network 10._.10.0 255.255.255.0
+   default-router 10._.10.4
+   domain-name WIFIDATA.COM
+   dns-server 10._.1.10
+ip dhcp pool IPCCTV
+   network 10._.50.0 255.255.255.0
+   default-router 10._.50.4
+   domain-name IPCCTV.COM
+   dns-server 10._.1.10
+ip dhcp pool VOICEVLAN
+   network 10._.100.0 255.255.255.0
+   default-router 10._.100.4
+   domain-name VOICEVLAN.COM
+   dns-server 10._.1.10
+   option 150 ip 10._.100.8   
+   END
+
+!!CREATING AND PLACING PORTS INSIDEAVLAN:
+config t
+vlan 10
+   name WIFIVLAN
+vlan 50
+   name IPCCTVLAN
+vlan 100
+   name VOICEVLAN
+Int Fa 0/2
+  switchport mode access
+  switchport access vlan 10  
+Int Fa 0/4
+  switchport mode access
+  switchport access vlan 10
+Int Fa 0/6
+  switchport mode access
+  switchport access vlan 50  
+Int Fa 0/8
+  switchport mode access
+  switchport access vlan 50    
+Int Fa 0/3
+  switchport mode access
+  switchport access vlan 100     
+Int Fa 0/5
+  switchport mode access
+  switchport access vlan 100  
+Int Fa 0/7
+  switchport mode access
+  switchport access vlan 100    
+ end
 end
 conf t 
 ip routing
@@ -70,7 +131,7 @@ wr
 @ EDGE ******************************************
 
 config t
-   hostname EDGE12
+   hostname EDGE_
    enable secret pass
    service password-encryption
    no logging console
@@ -85,15 +146,15 @@ config t
       exec-timeout 0 0
    Int Gi 0/0/0
      description INSIDE
-     ip add 10.12.12.1 255.255.255.0
+     ip add 10._._.1 255.255.255.0
 	 no shutdown
    Int Gi 0/0/1
      description OUTSIDE
-	 ip add 200.0.0.12 255.255.255.0
+	 ip add 200.0.0._ 255.255.255.0
 	 no shutdown
    Int Loopback 0
      description VIRTUALIP
-	 ip add 12.0.0.1 255.255.255.255
+	 ip add _.0.0.1 255.255.255.255
  end
 wr
 
